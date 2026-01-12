@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import useSWR from 'swr';
 import api from '../lib/axios';
 import Swal from 'sweetalert2';
+import { useNavigate, Link } from 'react-router-dom';
 import {
     EyeIcon,
     XMarkIcon,
@@ -10,15 +11,20 @@ import {
     ClockIcon,
     ChatBubbleLeftEllipsisIcon,
     HashtagIcon,
-    UserIcon
+    UserIcon,
+    ChartBarIcon, 
+    ArchiveBoxIcon 
 } from '@heroicons/react/24/outline';
 
 const fetcher = (url) => api.get(url).then((res) => res.data);
 
 const ManageOrders = () => {
+    const navigate = useNavigate();
     const { data: orders, mutate } = useSWR('/orders', fetcher);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const activeOrders = orders?.filter(order => order.status !== 'SELESAI' && order.status !== 'BATAL');
 
     const toast = (message, icon = 'success') => {
         Swal.mixin({
@@ -74,9 +80,25 @@ const ManageOrders = () => {
                     <h1 className="text-4xl font-black text-gray-900 uppercase tracking-tighter">Manage Orders</h1>
                     <p className="text-gray-500 font-medium">Monitoring pesanan real-time dapur Dirasa.</p>
                 </div>
+
+                <div className="flex flex-wrap gap-3">
+                    <Link 
+                        to="/dashboard/orders/history" 
+                        className="bg-white text-gray-700 px-6 py-4 rounded-2xl font-bold flex items-center gap-2 border border-gray-100 shadow-sm hover:bg-gray-50 transition-all text-sm"
+                    >
+                        <ArchiveBoxIcon className="w-5 h-5 text-gray-400" /> History
+                    </Link>
+                    <Link 
+                        to="/dashboard/orders/report" 
+                        className="bg-gray-900 text-white px-6 py-4 rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-gray-200 hover:scale-105 transition-all text-sm"
+                    >
+                        <ChartBarIcon className="w-5 h-5 text-primary" /> Laporan Pendapatan
+                    </Link>
+                </div>
+
                 <div className="bg-white px-8 py-5 rounded-3xl shadow-sm border border-gray-100">
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Active Orders</p>
-                    <p className="text-3xl font-black text-primary leading-none">{orders?.length || 0}</p>
+                    <p className="text-3xl font-black text-primary leading-none">{activeOrders?.length || 0}</p>
                 </div>
             </div>
 
@@ -94,7 +116,7 @@ const ManageOrders = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {orders?.map((order) => (
+                            {activeOrders?.map((order) => (
                                 <tr key={order.id} className="hover:bg-gray-50/80 transition-colors group">
                                     <td className="px-8 py-5">
                                         <p className="font-mono text-[10px] text-gray-400 mb-1">#{order.id.substring(0, 8).toUpperCase()}</p>
@@ -125,6 +147,9 @@ const ManageOrders = () => {
                             ))}
                         </tbody>
                     </table>
+                    {activeOrders?.length === 0 && (
+                        <div className="p-20 text-center text-gray-300 font-bold italic">Tidak ada pesanan aktif.</div>
+                    )}
                 </div>
             </div>
 
@@ -202,15 +227,15 @@ const ManageOrders = () => {
                                 <div className="grid grid-cols-3 gap-4">
                                     <button onClick={() => updateStatus(selectedOrder.id, 'DIBUAT')} className="flex flex-col items-center gap-2 p-4 rounded-[2rem] bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all group shadow-sm shadow-blue-100">
                                         <ClockIcon className="w-6 h-6 group-hover:scale-110 transition" />
-                                        <span className="text-[10px] font-black uppercase">Masak</span>
+                                        <span className="text-[10px] font-black uppercase text-center">Masak</span>
                                     </button>
                                     <button onClick={() => updateStatus(selectedOrder.id, 'DIANTAR')} className="flex flex-col items-center gap-2 p-4 rounded-[2rem] bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all group shadow-sm shadow-purple-100">
                                         <CheckCircleIcon className="w-6 h-6 group-hover:scale-110 transition" />
-                                        <span className="text-[10px] font-black uppercase">Antar</span>
+                                        <span className="text-[10px] font-black uppercase text-center">Antar</span>
                                     </button>
                                     <button onClick={() => updateStatus(selectedOrder.id, 'BATAL')} className="flex flex-col items-center gap-2 p-4 rounded-[2rem] bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all group shadow-sm shadow-red-100">
                                         <XMarkIcon className="w-6 h-6 group-hover:scale-110 transition" />
-                                        <span className="text-[10px] font-black uppercase">Batal</span>
+                                        <span className="text-[10px] font-black uppercase text-center">Batal</span>
                                     </button>
                                 </div>
                             </div>

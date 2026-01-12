@@ -5,7 +5,7 @@ const DashboardNavbar = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="bg-white border-b border-gray-100 px-8 py-6 flex justify-between items-center sticky top-0 z-10">
+    <header className="bg-white border-b border-gray-100 px-8 py-6 flex justify-between items-center sticky top-0 z-10 print:hidden">
       <div>
         <h1 className="text-2xl font-black text-gray-900 tracking-tighter">
           <span className="text-primary">DI</span>DASHBOARD

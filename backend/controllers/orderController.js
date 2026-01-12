@@ -99,3 +99,49 @@ export const checkout = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const getSalesReport = async (req, res) => {
+  try {
+    const { start, end } = req.query;
+    
+    let dateFilter = {};
+    if (start && end) {
+      dateFilter = {
+        createdAt: {
+          gte: new Date(start), 
+          lte: new Date(end),   
+        }
+      };
+    }
+
+    const orders = await prisma.order.findMany({
+      where: { 
+        status: 'SELESAI',
+        ...dateFilter 
+      },
+      include: { items: { include: { product: true } } }
+    });
+
+    const totalRevenue = orders.reduce((acc, curr) => acc + curr.totalPrice, 0);
+
+    const menuStats = {};
+    orders.forEach(order => {
+      order.items.forEach(item => {
+        const name = item.product.name;
+        menuStats[name] = (menuStats[name] || 0) + item.qty;
+      });
+    });
+
+    const bestSellers = Object.entries(menuStats)
+      .map(([name, qty]) => ({ name, qty }))
+      .sort((a, b) => b.qty - a.qty);
+
+    res.json({
+      totalOrders: orders.length,
+      totalRevenue,
+      bestSellers
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Gagal memuat laporan" });
+  }
+};

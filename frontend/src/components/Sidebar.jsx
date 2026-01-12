@@ -19,7 +19,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="w-64 bg-white min-h-screen border-r border-gray-100 flex flex-col">
+    <div className="w-64 bg-white min-h-screen border-r border-gray-100 flex flex-col print:hidden">
       <div className="p-8">
         <h1 className="text-2xl font-black text-primary tracking-tighter">DIRASA.</h1>
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Admin Panel</p>

@@ -9,5 +9,6 @@ router.get('/my-orders', verifyToken, ctrl.getMyOrders); // User: Lihat pesanan 
 router.post('/checkout', verifyToken, ctrl.checkout); // User: Proses checkout
 router.patch('/:id/received', verifyToken, ctrl.confirmOrderReceived); // User: Tandai SELESAI
 router.patch('/status/:id', verifyToken, isAdmin, ctrl.updateOrderStatus); // Admin: Ubah ke DIANTAR
+router.get('/report', verifyToken, isAdmin, ctrl.getSalesReport); // Admin: Laporan
 
 export default router;
