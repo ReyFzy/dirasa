@@ -224,7 +224,7 @@ const ManageOrders = () => {
                                     <p className="text-3xl font-black text-primary italic tracking-tighter">{formatIDR(selectedOrder.totalPrice)}</p>
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-4">
+                                <div className="grid grid-cols-4 gap-4">
                                     <button onClick={() => updateStatus(selectedOrder.id, 'DIBUAT')} className="flex flex-col items-center gap-2 p-4 rounded-[2rem] bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all group shadow-sm shadow-blue-100">
                                         <ClockIcon className="w-6 h-6 group-hover:scale-110 transition" />
                                         <span className="text-[10px] font-black uppercase text-center">Masak</span>
@@ -232,6 +232,10 @@ const ManageOrders = () => {
                                     <button onClick={() => updateStatus(selectedOrder.id, 'DIANTAR')} className="flex flex-col items-center gap-2 p-4 rounded-[2rem] bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all group shadow-sm shadow-purple-100">
                                         <CheckCircleIcon className="w-6 h-6 group-hover:scale-110 transition" />
                                         <span className="text-[10px] font-black uppercase text-center">Antar</span>
+                                    </button>
+                                    <button onClick={() => updateStatus(selectedOrder.id, 'SELESAI')} className="flex flex-col items-center gap-2 p-4 rounded-[2rem] bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all group shadow-sm shadow-green-100">
+                                        <CheckCircleIcon className="w-6 h-6 group-hover:scale-110 transition" />
+                                        <span className="text-[10px] font-black uppercase text-center">Selesai</span>
                                     </button>
                                     <button onClick={() => updateStatus(selectedOrder.id, 'BATAL')} className="flex flex-col items-center gap-2 p-4 rounded-[2rem] bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all group shadow-sm shadow-red-100">
                                         <XMarkIcon className="w-6 h-6 group-hover:scale-110 transition" />
