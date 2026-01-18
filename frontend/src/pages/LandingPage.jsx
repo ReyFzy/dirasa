@@ -17,6 +17,7 @@ const LandingPage = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [favorites, setFavorites] = useState([]);
     const [role, setRole] = useState(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const { data: products } = useSWR('/products', fetcher);
     const { data: categories } = useSWR('/categories', fetcher);
@@ -150,6 +151,19 @@ const LandingPage = () => {
         }
     };
 
+    const handleComingSoon = (feature) => {
+        Swal.fire({
+            title: 'Coming Soon!',
+            text: `Fitur ${feature} sedang dalam pengembangan Chef Meow.`,
+            icon: 'info',
+            confirmButtonColor: '#b6713c',
+            borderRadius: '20px',
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            }
+        });
+    };
+
     const handleViewCart = () => {
         if (!checkAuth('melihat keranjang')) return;
 
@@ -254,7 +268,7 @@ const LandingPage = () => {
                     const response = await api.post('/orders/checkout', payload);
                     if (response.status === 200 || response.status === 201) {
                         await clearCart();
-                        
+
                         Swal.fire({
                             icon: 'success',
                             title: 'PESANAN DITERIMA!',
@@ -282,59 +296,99 @@ const LandingPage = () => {
     return (
         <div className="font-jakarta bg-white text-gray-900 scroll-smooth">
             {/* --- NAVBAR --- */}
-            <nav className="flex justify-between items-center px-6 md:px-20 py-4 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
-                <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
-                    <img src="/logo.png" alt="Logo" className="h-12 w-12 rounded-full object-cover border-2 border-primary hover:rotate-12 transition-transform" />
-                    <div className="text-2xl font-black text-primary tracking-tighter">DIRASA.</div>
-                </div>
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md shadow-sm">
+                <div className="flex justify-between items-center px-6 md:px-20 py-4">
+                    <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+                        <img src="/logo.png" alt="Logo" className="h-10 w-10 md:h-12 md:w-12 rounded-full object-cover border-2 border-primary hover:rotate-12 transition-transform" />
+                        <div className="text-xl md:text-2xl font-black text-primary tracking-tighter">DIRASA.</div>
+                    </div>
 
-                <div className="hidden md:flex gap-10 font-bold text-xs uppercase tracking-widest text-gray-600">
-                    <a href="#menu" className="hover:text-primary transition">Our Menu</a>
-                    <a href="#" className="hover:text-primary transition">Special Promo</a>
-                    <a href="#" className="hover:text-primary transition">Find Us</a>
-                </div>
+                    <div className="hidden md:flex gap-10 font-bold text-xs uppercase tracking-widest text-gray-600">
+                        <a href="#menu" className="hover:text-primary transition">Our Menu</a>
+                        <button onClick={() => handleComingSoon('Special Promo')} className="hover:text-primary transition uppercase font-bold text-xs tracking-widest">
+                            Special Promo
+                        </button>
+                        <button onClick={() => navigate('/find-us')} className="hover:text-primary transition uppercase font-bold text-xs tracking-widest">
+                            Find Us
+                        </button>
+                    </div>
 
-                <div className="flex items-center gap-4">
-                    <button onClick={handleViewCart} className="relative group mr-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-gray-700 group-hover:text-primary transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        {cartItems.length > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full animate-bounce">
-                                {cartItems.reduce((acc, curr) => acc + curr.qty, 0)}
-                            </span>
-                        )}
-                    </button>
+                    <div className="flex items-center gap-2 md:gap-4">
+                        <button onClick={handleViewCart} className="relative group p-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-7 md:w-7 text-gray-700 group-hover:text-primary transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                            {cartItems.length > 0 && (
+                                <span className="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full animate-bounce">
+                                    {cartItems.reduce((acc, curr) => acc + curr.qty, 0)}
+                                </span>
+                            )}
+                        </button>
 
-                    {isLoggedIn ? (
-                        <div className="flex gap-2">
-                            {role === 'ADMIN' && (
-                                <button
-                                    onClick={() => navigate('/dashboard')}
-                                    className="bg-primary text-white px-6 py-2 rounded-full font-bold hover:bg-secondary transition text-sm shadow-md"
-                                >
-                                    DASHBOARD
+                        <div className="hidden md:flex items-center gap-2">
+                            {isLoggedIn ? (
+                                <>
+                                    {role === 'ADMIN' && (
+                                        <button onClick={() => navigate('/dashboard')} className="bg-primary text-white px-6 py-2 rounded-full font-bold hover:bg-secondary transition text-sm shadow-md">
+                                            DASHBOARD
+                                        </button>
+                                    )}
+                                    <button onClick={() => navigate('/orders')} className="bg-gray-100 text-gray-700 px-6 py-2 rounded-full font-bold hover:bg-gray-200 transition text-sm">
+                                        PESANAN SAYA
+                                    </button>
+                                    <button onClick={handleLogout} className="border-2 border-primary text-primary px-6 py-2 rounded-full font-bold hover:bg-primary hover:text-white transition text-sm">
+                                        LOGOUT
+                                    </button>
+                                </>
+                            ) : (
+                                <button onClick={() => navigate('/login')} className="bg-primary text-white px-8 py-2 rounded-full font-bold hover:bg-secondary transition shadow-lg shadow-primary/20 text-sm">
+                                    LOGIN
                                 </button>
                             )}
-
-                            <button onClick={() => navigate('/orders')} className="bg-gray-100 text-gray-700 px-6 py-2 rounded-full font-bold hover:bg-gray-200 transition text-sm">
-                                PESANAN SAYA
-                            </button>
-
-                            <button onClick={handleLogout} className="border-2 border-primary text-primary px-6 py-2 rounded-full font-bold hover:bg-primary hover:text-white transition text-sm">
-                                LOGOUT
-                            </button>
                         </div>
-                    ) : (
-                        <button onClick={() => navigate('/login')} className="bg-primary text-white px-8 py-2 rounded-full font-bold hover:bg-secondary transition shadow-lg shadow-primary/20 text-sm">
-                            LOGIN
+
+                        <button
+                            className="md:hidden p-2 text-gray-700"
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        >
+                            {isMenuOpen ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                                </svg>
+                            )}
                         </button>
-                    )}
+                    </div>
+                </div>
+
+                <div className={`md:hidden overflow-hidden transition-all duration-300 bg-white border-t border-gray-50 ${isMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="flex flex-col p-6 gap-4 font-bold text-sm tracking-widest text-gray-600 uppercase">
+                        <a href="#menu" onClick={() => setIsMenuOpen(false)} className="py-2 hover:text-primary border-b border-gray-50">Our Menu</a>
+                        <button onClick={() => { handleComingSoon('Special Promo'); setIsMenuOpen(false); }} className="text-left py-2 hover:text-primary border-b border-gray-50">Special Promo</button>
+                        <button onClick={() => { navigate('/find-us'); setIsMenuOpen(false); }} className="text-left py-2 hover:text-primary border-b border-gray-50">Find Us</button>
+
+                        <div className="pt-4 space-y-3">
+                            {isLoggedIn ? (
+                                <>
+                                    {role === 'ADMIN' && (
+                                        <button onClick={() => { navigate('/dashboard'); setIsMenuOpen(false); }} className="w-full bg-primary text-white py-3 rounded-xl">DASHBOARD</button>
+                                    )}
+                                    <button onClick={() => { navigate('/orders'); setIsMenuOpen(false); }} className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl">PESANAN SAYA</button>
+                                    <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="w-full border-2 border-primary text-primary py-3 rounded-xl">LOGOUT</button>
+                                </>
+                            ) : (
+                                <button onClick={() => { navigate('/login'); setIsMenuOpen(false); }} className="w-full bg-primary text-white py-4 rounded-xl shadow-lg">LOGIN</button>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </nav>
 
             {/* --- HERO SECTION --- */}
-            <section className="relative overflow-hidden bg-[#fdf8f4] px-6 md:px-20 py-20 flex flex-col md:flex-row items-center justify-between min-h-[80vh]">
+            <section className="relative overflow-hidden bg-[#fdf8f4] px-6 md:px-20 py-20 pt-32 flex flex-col md:flex-row items-center justify-between min-h-[80vh]">
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 -skew-x-12 transform translate-x-20"></div>
                 <div className="relative z-10 flex-1 space-y-8">
                     <div className="inline-block px-4 py-2 bg-primary/10 rounded-full text-primary font-bold text-xs tracking-widest uppercase">

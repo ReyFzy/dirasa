@@ -14,6 +14,8 @@ import ManageCategories from './pages/ManageCategories';
 import ManageOrders from './pages/ManageOrders';
 import ReportPage from './pages/ReportPage';
 import OrderHistory from './pages/OrderHistory';
+import FindUs from './pages/FindUs';
+import NotFound from './pages/NotFound';
 
 function App() {
   const [favorites, setFavorites] = useState([]);
@@ -41,6 +43,7 @@ function App() {
         />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/find-us" element={<FindUs />} />
         <Route
           path="/favorites"
           element={
@@ -51,6 +54,7 @@ function App() {
           }
         />
         <Route path="/orders" element={<OrderPage />} />
+        <Route path="*" element={<NotFound />} />
 
         {/* DASHBOARD */}
         <Route path="/dashboard" element={<DashboardLayout />}>
