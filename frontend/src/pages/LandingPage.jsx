@@ -15,7 +15,6 @@ const LandingPage = () => {
 
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [cartItems, setCartItems] = useState([]);
     const [favorites, setFavorites] = useState([]);
     const [role, setRole] = useState(null);
 
@@ -26,6 +25,17 @@ const LandingPage = () => {
         isLoggedIn ? '/favorites' : null,
         fetcher
     );
+
+    const { data: dbCartItems, mutate: mutateCart } = useSWR(
+        isLoggedIn ? '/cart' : null,
+        fetcher
+    );
+
+    const cartItems = dbCartItems?.map(item => ({
+        ...item.product,
+        cartItemId: item.id,
+        qty: item.qty
+    })) || [];
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -106,26 +116,38 @@ const LandingPage = () => {
         }
     };
 
-    const addToCart = (product) => {
+    const addToCart = async (product) => {
         if (!checkAuth('menambah ke keranjang')) return;
 
-        setCartItems(prev => {
-            const existing = prev.find(item => String(item.id) === String(product.id));
-            if (existing) {
-                return prev.map(item =>
-                    String(item.id) === String(product.id) ? { ...item, qty: item.qty + 1 } : item
-                );
-            }
-            return [...prev, { ...product, qty: 1 }];
-        });
+        try {
+            await api.post('/cart', {
+                productId: product.id,
+                qty: 1
+            });
 
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 1500,
-        });
-        Toast.fire({ icon: 'success', title: `${product.name} masuk keranjang!` });
+            mutateCart();
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1500,
+            });
+            Toast.fire({ icon: 'success', title: `${product.name} masuk keranjang!` });
+        } catch (error) {
+            Swal.fire('Gagal!', 'Gagal menambahkan ke keranjang.', 'error');
+        }
+    };
+
+    const clearCart = async () => {
+        try {
+            for (const item of dbCartItems) {
+                await api.delete(`/cart/${item.id}`);
+            }
+            mutateCart();
+        } catch (error) {
+            console.error("Gagal mengosongkan keranjang");
+        }
     };
 
     const handleViewCart = () => {
@@ -231,7 +253,8 @@ const LandingPage = () => {
 
                     const response = await api.post('/orders/checkout', payload);
                     if (response.status === 200 || response.status === 201) {
-                        setCartItems([]);
+                        await clearCart();
+                        
                         Swal.fire({
                             icon: 'success',
                             title: 'PESANAN DITERIMA!',
@@ -244,7 +267,7 @@ const LandingPage = () => {
                     Swal.fire('Gagal!', errorMsg, 'error');
                 }
             } else if (result.isDenied) {
-                setCartItems([]);
+                await clearCart();
                 Swal.fire('Dikosongkan!', 'Keranjang belanja telah dibersihkan.', 'success');
             }
         });

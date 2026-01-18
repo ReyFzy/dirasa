@@ -4,7 +4,7 @@ import { verifyToken } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 
-router.get('/:userId', verifyToken, ctrl.getMyCart);
+router.get('/', verifyToken, ctrl.getMyCart);
 router.post('/', verifyToken, ctrl.addToCart);
 router.delete('/:id', verifyToken, ctrl.removeFromCart);
 
