@@ -18,8 +18,7 @@ async function main() {
   });
 
   await prisma.category.createMany({
-    data: [{ name: 'Makanan' }, { name: 'Minuman' }],
-    skipDuplicates: true,
+    data: [{ name: 'Makanan' }, { name: 'Minuman' }]
   });
 
   console.log('Seeding berhasil dilakukan!');

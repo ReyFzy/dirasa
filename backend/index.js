@@ -8,18 +8,15 @@ import userRoutes from './routes/userRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import favoriteRoutes from './routes/favoriteRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
-import { fileURLToPath } from 'url';
-import path from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.get('/', (req, res) => {
+  res.send('dirasa API online!');
+});
 
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);

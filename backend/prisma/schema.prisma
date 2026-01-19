@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String     @id @default(uuid())
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
   email     String     @unique
   password  String
   name      String
@@ -17,7 +17,7 @@ model User {
   cart      CartItem[]
   orders    Order[]
   createdAt DateTime   @default(now())
-  updatedAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 enum Role {
@@ -26,31 +26,31 @@ enum Role {
 }
 
 model Category {
-  id       String    @id @default(uuid())
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
   name     String    @unique
   products Product[]
 }
 
 model Product {
-  id          String     @id @default(uuid())
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   price       Float
   description String?
   image       String?
   stock       Int
-  categoryId  String
-  category    Category   @relation(fields: [categoryId], references: [id])
+  categoryId  String      @db.ObjectId
+  category    Category    @relation(fields: [categoryId], references: [id])
   favorites   Favorite[]
   cartItems   CartItem[]
   orderItems  OrderItem[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @default(now())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model Favorite {
-  id        String  @id @default(uuid())
-  userId    String
-  productId String
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String  @db.ObjectId
+  productId String  @db.ObjectId
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -58,33 +58,33 @@ model Favorite {
 }
 
 model CartItem {
-  id        String  @id @default(uuid())
-  userId    String
-  productId String
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String  @db.ObjectId
+  productId String  @db.ObjectId
   qty       Int     @default(1)
   user      User    @relation(fields: [userId], references: [id])
   product   Product @relation(fields: [productId], references: [id])
 }
 
 model Order {
-  id         String      @id @default(uuid())
-  userId     String
-  totalPrice Int
-  status     OrderStatus @default(ANTRE)
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String      @db.ObjectId
+  totalPrice  Int
+  status      OrderStatus @default(ANTRE)
   note        String?
   tableNumber String?
-  items      OrderItem[]
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @default(now())  
+  items       OrderItem[]
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model OrderItem {
-  id        String  @id @default(uuid())
-  orderId   String
-  productId String
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  orderId   String  @db.ObjectId
+  productId String  @db.ObjectId
   qty       Int
-  price     Int     
+  price     Int
   order     Order   @relation(fields: [orderId], references: [id])
   product   Product @relation(fields: [productId], references: [id])
 }
