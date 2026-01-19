@@ -8,7 +8,7 @@ import rendang from "../assets/rendang.jfif";
 
 const fetcher = (url) => api.get(url).then((res) => res.data);
 
-const IMAGE_BASE_URL = "http://localhost:5000/uploads/products/";
+const IMAGE_BASE_URL = "https://res.cloudinary.com/dxiwztoru/image/upload/";
 
 const LandingPage = () => {
     const navigate = useNavigate();
@@ -447,7 +447,6 @@ const LandingPage = () => {
                                 </button>
 
                                 <div className="relative h-56 bg-gray-50 rounded-2xl mb-6 flex items-center justify-center overflow-hidden">
-                                    {/* LOGIKA FOTO: Cek jika ada item.image */}
                                     {item.image ? (
                                         <img
                                             src={`${IMAGE_BASE_URL}${item.image}`}

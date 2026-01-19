@@ -10,7 +10,7 @@ const ManageProducts = () => {
   const { data: products, mutate } = useSWR('/products', fetcher);
   const { data: categories } = useSWR('/categories', fetcher);
 
-  const IMAGE_BASE_URL = 'http://localhost:5000/uploads/products/';
+  const IMAGE_BASE_URL = 'https://res.cloudinary.com/dxiwztoru/image/upload/';
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
