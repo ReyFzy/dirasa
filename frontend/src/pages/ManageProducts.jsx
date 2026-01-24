@@ -98,6 +98,31 @@ const ManageProducts = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      const result = await Swal.fire({
+        title: 'Hapus Produk?',
+        text: "Data yang dihapus tidak dapat dikembalikan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal'
+      });
+
+      if (result.isConfirmed) {
+        await api.delete(`/products/${id}`);
+        
+        toast('Produk berhasil dihapus');
+        
+        mutate();
+      }
+    } catch (err) {
+      toast(err.response?.data?.message || 'Gagal menghapus produk', 'error');
+    }
+  };
+
   return (
     <div className="font-jakarta p-4">
       <div className="flex justify-between items-end mb-8">
@@ -143,7 +168,7 @@ const ManageProducts = () => {
                 <td className="px-6 py-4 font-black text-primary">Rp {item.price.toLocaleString('id-ID')}</td>
                 <td className="px-6 py-4 text-center">
                   <button onClick={() => openModal(item)} className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition"><PencilSquareIcon className="w-5 h-5" /></button>
-                  <button onClick={() => {/* handleDelete */ }} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"><TrashIcon className="w-5 h-5" /></button>
+                  <button onClick={() => handleDelete(item.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"><TrashIcon className="w-5 h-5" /></button>
                 </td>
               </tr>
             ))}
